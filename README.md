@@ -6,3 +6,6 @@ cmd to working folder
 python -m venv venv
 ^creates virtual enviorment
 pip install FastAPI
+
+## Pip install from requirments file
+pip install -r requirements.txt
