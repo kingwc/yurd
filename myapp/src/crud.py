@@ -30,7 +30,18 @@ def create_account(db: Session, account: schemas.AccountCreate):
     db.refresh(db_account)
     return db_account
 
-#TODO def create_event
+def create_event(db: Session, event: schemas.EventCreate):
+    db_event = models.Event(
+        title=event.title,
+        description=event.description,
+        is_public=event.is_public,
+    )
+
+    db.add(db_event)
+    db.commit()
+    db.refresh(db_event)
+    return db_event
+
 
 #################
 # Read functions
