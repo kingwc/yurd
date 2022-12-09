@@ -1,15 +1,21 @@
 from sqlalchemy.orm import Session
 
 from . import models, schemas
+from APILoginController import get_password_hash
 
 ###################
 # Create functions
 ###################
 
 def create_account(db: Session, account: schemas.AccountCreate):
-    #TODO hash password
-    hashed_password = 'password'
-    db_account = models.Account(email=account.email, hashed_password=hashed_password)
+    hashed_password = get_password_hash(account.password)
+    db_account = models.Account(
+        username=account.username, 
+        email=account.email, 
+        hashed_password=hashed_password,
+        first_name=account.first_name,
+        last_name=account.last_name)
+        
     db.add(db_account)
     db.commit()
     db.refresh(db_account)
