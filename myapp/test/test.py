@@ -5,3 +5,4 @@ from src import main
 
 def test_test():
     assert main.func(1) == 2
+    
