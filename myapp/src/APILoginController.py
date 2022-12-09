@@ -21,10 +21,6 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 APILoginApp = FastAPI()
 
-class UserInDB(schemas.Account):
-    hashed_password: str
-
-
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -46,9 +42,8 @@ def get_password_hash(password):
 
 
 def get_user(db, username: str):
-    if username in db:
-        user_dict = db[username]
-        return UserInDB(**user_dict)
+    account = crud.get_account_by_username(db, username)
+    return account
 
 
 def authenticate_user(db, username: str, password: str):
@@ -59,7 +54,7 @@ def authenticate_user(db, username: str, password: str):
         return False
     return user
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
+async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -73,7 +68,6 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    db = Depends(get_db)
     user = get_user(db, username=token_data.username)
     if user is None:
         raise credentials_exception
@@ -81,7 +75,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
 
 
 async def get_current_active_user(current_user: schemas.Account = Depends(get_current_user)):
-    if current_user.disabled:
+    if not current_user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 
@@ -100,8 +94,7 @@ async def login_read_items(token: str = Depends(oauth2_scheme)):
     return {"token": token}
 
 @APILoginApp.post("/login", response_model=Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    db = Depends(get_db)
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
