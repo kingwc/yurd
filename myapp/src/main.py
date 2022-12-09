@@ -4,10 +4,10 @@ from fastapi import FastAPI
 
 from src import models
 from src.database import engine
-from src.APILoginController import APILoginApp
+from src.APIAccountsController import APIAccountsApp
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-app.mount("/accounts", APILoginApp)
+app.mount("/accounts", APIAccountsApp)

@@ -20,7 +20,8 @@ SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-APILoginApp = FastAPI()
+#FastAPI app for accounts endpoints
+APIAccountsApp = FastAPI()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -82,7 +83,7 @@ def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-@APILoginApp.post("/login", response_model=Token)
+@APIAccountsApp.post("/login", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:
@@ -97,12 +98,12 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
-@APILoginApp.get("/users/me/", response_model=schemas.Account)
+@APIAccountsApp.get("/currentuser", response_model=schemas.Account)
 async def read_users_me(current_user: schemas.Account = Depends(get_current_active_user)):
     return current_user
 
 # Create Account post view
-@APILoginApp.post('/signup')
+@APIAccountsApp.post('/signup')
 def create_account(account: schemas.AccountCreate, db: Session = Depends(get_db)):
     db_account = crud.get_account_by_email(db, email=account.email)
     if db_account:
