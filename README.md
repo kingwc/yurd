@@ -9,3 +9,6 @@ pip install FastAPI
 
 ## Pip install from requirements file
 pip install -r requirements.txt
+
+## Update requirements file with all imports
+pip freeze > requirements.txt
