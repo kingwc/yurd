@@ -145,6 +145,6 @@ async def read_own_items(current_user: User = Depends(get_current_active_user)):
 @APILoginApp.post('/signup')
 def create_account(account: schemas.AccountCreate, db: Session = Depends(get_db)):
     db_account = crud.get_account_by_email(db, email=account.email)
-    if db_user:
+    if db_account:
         raise HTTPException(status_code=400, detail='Email account already registered.')
-    return crud.create_account(db=db, user=user)
+    return crud.create_account(db=db, account=account)
