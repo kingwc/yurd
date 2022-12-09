@@ -1,6 +1,7 @@
 import sys
 sys.path.append("..")
 
+from sqlalchemy import delete
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
 
@@ -23,7 +24,7 @@ def create_account(db: Session, account: schemas.AccountCreate):
         hashed_password=hashed_password,
         first_name=account.first_name,
         last_name=account.last_name)
-        
+
     db.add(db_account)
     db.commit()
     db.refresh(db_account)
@@ -47,3 +48,8 @@ def get_account_by_username(db: Session, username: str):
 # Query 10 accounts
 def get_accounts(db: Session, skip: int = 0, limit: int = 10):
     return db.query(models.Account).offset(skip).limit(limit).all()
+
+################
+# Test functions
+################
+
