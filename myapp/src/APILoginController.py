@@ -1,3 +1,5 @@
+import sys
+sys.path.append('..')
 from datetime import datetime, timedelta
 from typing import Union
 
@@ -8,8 +10,8 @@ from passlib.context import CryptContext
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from . import crud, models, schemas
-from .database import SessionLocal, engine, get_db
+from src import crud, models, schemas
+from src.database import SessionLocal, engine, get_db
 
 # to get a string like this run:
 # openssl rand -hex 32
