@@ -6,6 +6,10 @@ from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
+
+from . import crud, models, schemas
+from .database import SessionLocal, engine, get_db
 
 # to get a string like this run:
 # openssl rand -hex 32
@@ -132,3 +136,13 @@ async def read_users_me(current_user: User = Depends(get_current_active_user)):
 @APILoginApp.get("/users/me/items/")
 async def read_own_items(current_user: User = Depends(get_current_active_user)):
     return [{"item_id": "Foo", "owner": current_user.username}]
+
+
+# Create Account post view
+
+@APILoginApp.post('/signup')
+def create_account(account: schemas.AccountCreate, db: Session = Depends(get_db)):
+    db_account = crud.get_account_by_email(db, email=account.email)
+    if db_user:
+        raise HTTPException(status_code=400, detail='Email account already registered.')
+    return crud.create_account(db=db, user=user)
