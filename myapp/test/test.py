@@ -1,7 +1,7 @@
 import sys
 sys.path.append('../myapp')
 import pytest
-import src
+from src import main
 
 def test_test():
-    assert True
+    assert main.func(1) == 2

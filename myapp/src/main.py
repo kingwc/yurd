@@ -6,6 +6,9 @@ app = FastAPI()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
+def func(X):
+    return X + 1
+
 
 class User(BaseModel):
     username: str
