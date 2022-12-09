@@ -1,5 +1,6 @@
 import sys
 sys.path.append('..')
+
 from datetime import datetime, timedelta
 from typing import Union
 
@@ -29,22 +30,18 @@ class Token(BaseModel):
     access_token: str
     token_type: str
 
-
 class TokenData(BaseModel):
     username: Union[str, None] = None
 
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
-
 def get_password_hash(password):
     return pwd_context.hash(password)
-
 
 def get_user(db, username: str):
     account = crud.get_account_by_username(db, username)
     return account
-
 
 def authenticate_user(db, username: str, password: str):
     user = get_user(db, username)
@@ -72,7 +69,6 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
     if user is None:
         raise credentials_exception
     return user
-
 
 async def get_current_active_user(current_user: schemas.Account = Depends(get_current_user)):
     if not current_user.is_active:
@@ -112,14 +108,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
 async def read_users_me(current_user: schemas.Account = Depends(get_current_active_user)):
     return current_user
 
-
-@APILoginApp.get("/users/me/items/")
-async def read_own_items(current_user: schemas.Account = Depends(get_current_active_user)):
-    return [{"item_id": "Foo", "owner": current_user.username}]
-
-
 # Create Account post view
-
 @APILoginApp.post('/signup')
 def create_account(account: schemas.AccountCreate, db: Session = Depends(get_db)):
     db_account = crud.get_account_by_email(db, email=account.email)
