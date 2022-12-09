@@ -1,0 +1,35 @@
+from sqlalchemy.orm import Session
+
+from . import models, schemas
+
+###################
+# Create functions
+###################
+
+def create_account(db: Session, account: schemas.AccountCreate):
+    #TODO hash password
+    hashed_password = 'password'
+    db_account = models.Account(email=account.email, hashed_password=hashed_password)
+    db.add(db_account)
+    db.commit()
+    db.refresh(db_account)
+    return db_account
+
+#TODO def create_event
+
+#################
+# Read functions
+#################
+
+def get_account(db: Session, account_id: int):
+    return db.query(models.Account).filter(models.Account.id == account_id).first()
+
+def get_account_by_email(db: Session, email: str):
+    return db.query(models.Account).filter(models.Account.email == email).first()
+
+def get_account_by_username(db: Session, username: str):
+    return db.query(models.Account).filter(models.Account.username == username).first()
+
+# Query 10 accounts
+def get_accounts(db: Session, skip: int = 0, limit: int = 10):
+    return db.query(models.Account).offset(skip).limit(limit).all()
