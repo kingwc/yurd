@@ -1,7 +1,15 @@
-from sqlalchemy.orm import Session
+import sys
+sys.path.append("..")
 
-from . import models, schemas
-from APILoginController import get_password_hash
+from sqlalchemy.orm import Session
+from passlib.context import CryptContext
+
+from src import models, schemas
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def get_password_hash(password):
+    return pwd_context.hash(password)
 
 ###################
 # Create functions

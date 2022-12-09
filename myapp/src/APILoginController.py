@@ -36,9 +36,6 @@ class TokenData(BaseModel):
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
-def get_password_hash(password):
-    return pwd_context.hash(password)
-
 def get_user(db, username: str):
     account = crud.get_account_by_username(db, username)
     return account
@@ -84,10 +81,6 @@ def create_access_token(data: dict, expires_delta: Union[timedelta, None] = None
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
-
-@APILoginApp.get("/items/")
-async def login_read_items(token: str = Depends(oauth2_scheme)):
-    return {"token": token}
 
 @APILoginApp.post("/login", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
