@@ -1,5 +1,16 @@
 from pydantic import BaseModel
 
+class Participant(BaseModel):
+    account_id: int
+
+    class Config:
+        orm_mode = True
+
+class UpdateParticipant(Participant):
+    permissions: int
+
+# Event schemas
+
 class EventBase(BaseModel):
     title: str
     description: str | None = None
@@ -12,9 +23,16 @@ class EventCreate(EventBase):
 class Event(EventBase):
     id: int
     owner_id: int
+    participants: list[Participant] = []
 
     class Config:
         orm_mode = True
+
+class MyEvents(BaseModel):
+    title: str
+    description: str
+    is_public: bool
+    id: int
 
 # Acount schemas
 

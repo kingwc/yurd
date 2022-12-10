@@ -104,7 +104,7 @@ async def read_users_me(current_user: schemas.Account = Depends(get_current_acti
 
 # Create Account post view
 @APIAccountsApp.post('/signup')
-def create_account(account: schemas.AccountCreate, db: Session = Depends(get_db)):
+async def create_account(account: schemas.AccountCreate, db: Session = Depends(get_db)):
     db_account = crud.get_account_by_email(db, email=account.email)
     if db_account:
         raise HTTPException(status_code=400, detail='Email account already registered.')

@@ -30,11 +30,12 @@ def create_account(db: Session, account: schemas.AccountCreate):
     db.refresh(db_account)
     return db_account
 
-def create_event(db: Session, event: schemas.EventCreate):
+def create_event(db: Session, event: schemas.EventCreate, account_id: int):
     db_event = models.Event(
         title=event.title,
         description=event.description,
         is_public=event.is_public,
+        owner_id=account_id,
     )
 
     db.add(db_event)
@@ -42,6 +43,16 @@ def create_event(db: Session, event: schemas.EventCreate):
     db.refresh(db_event)
     return db_event
 
+def add_participant(db: Session, event_id: int, account_id: int):
+    db_participant = models.Participant(
+        event_id = event_id,
+        account_id = account_id
+    )
+
+    db.add(db_participant)
+    db.commit()
+    db.refresh(db_participant)
+    return db_participant
 
 #################
 # Read functions
@@ -59,6 +70,11 @@ def get_account_by_username(db: Session, username: str):
 # Query 10 accounts
 def get_accounts(db: Session, skip: int = 0, limit: int = 10):
     return db.query(models.Account).offset(skip).limit(limit).all()
+
+def get_event(db: Session, event_id: int):
+    return db.query(models.Event).filter(models.Event.id == event_id).first()
+
+
 
 ################
 # Test functions
