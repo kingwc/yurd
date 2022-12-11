@@ -66,6 +66,7 @@ def test_login():
     assert response.status_code == 401
 
 def test_currentuser():
+    #Test getting the current user
     response = client.get("/accounts/currentuser", headers={"Authorization": "Bearer " + token})
     assert response.status_code == 200
     responseJSON = response.json()
@@ -75,6 +76,57 @@ def test_currentuser():
     assert responseJSON.get("last_name") == "User"
     assert responseJSON.get("id") == 1
     assert responseJSON.get("is_active") == True
+
+def test_createEvent():
+    #Test creating an event
+    response = client.post("/events/create", headers={"Authorization": "Bearer " + token}, 
+        json={
+            "title": "Test Event",
+            "description": "This is a test event",
+            "is_public": True
+        })
+    assert response.status_code == 200
+    responseJSON = response.json()
+    assert responseJSON.get("title") == "Test Event"
+    assert responseJSON.get("description") == "This is a test event"
+    assert responseJSON.get("is_public") == True
+    assert responseJSON.get("hub_id") == None
+    assert responseJSON.get("id") == 1
+
+    #Test creating an event, unathorized
+    response = client.post("/events/create", 
+        json={
+            "title": "Test Event",
+            "description": "This is a test event",
+            "is_public": True
+        })
+    assert response.status_code == 401
+
+def test_getMyEvents():
+    #Test getting all events for user
+    response = client.get("/events/myevents", headers={"Authorization": "Bearer " + token})
+    assert response.status_code == 200
+    responseJSONList = response.json()
+    assert responseJSONList[0].get("title") == "Test Event"
+    assert responseJSONList[0].get("description") == "This is a test event"
+    assert responseJSONList[0].get("is_public") == True
+    assert responseJSONList[0].get("hub_id") == None
+    assert responseJSONList[0].get("id") == 1
+
+    #Test getting all events for invalid user
+    response = client.get("/events/myevents")
+    assert response.status_code == 401
+
+def test_getEvent():
+    #Test getting an event by id
+    response = client.get("/events/1")
+    assert response.status_code == 200
+    responseJSON = response.json()
+    assert responseJSON.get("title") == "Test Event"
+    assert responseJSON.get("description") == "This is a test event"
+    assert responseJSON.get("is_public") == True
+    assert responseJSON.get("hub_id") == None
+    assert responseJSON.get("id") == 1
 
 @pytest.fixture(scope='session', autouse=True)
 def teardown():
