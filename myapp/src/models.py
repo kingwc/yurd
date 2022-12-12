@@ -48,3 +48,13 @@ class Participant(Base):
     
     events = relationship('Event', back_populates='participants')
 
+class Invite(Base):
+    __tablename__ = 'invites'
+
+    id = Column(Integer, primary_key=True, index=True)
+    account_id_received = Column(Integer, ForeignKey('accounts.id'))
+    account_id_sent = Column(Integer, ForeignKey('accounts.id'))
+    event_id = Column(Integer)
+    code = Column(Integer, unique=True)
+    is_perm = Column(Boolean, default=False)
+    is_used = Column(Boolean, default=False)

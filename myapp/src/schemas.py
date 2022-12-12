@@ -52,3 +52,13 @@ class Account(AccountBase):
 
     class Config:
         orm_mode = True
+
+# Invite Schemas
+
+class InviteCreate(BaseModel):
+    account_id_received: int
+    event_id: int 
+    is_perm: bool
+
+class InviteView(BaseModel):
+    account_id: int

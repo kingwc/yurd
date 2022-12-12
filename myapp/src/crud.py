@@ -1,5 +1,6 @@
 import sys
 sys.path.append("..")
+import secrets
 
 from sqlalchemy import delete
 from sqlalchemy.orm import Session
@@ -54,6 +55,36 @@ def add_participant(db: Session, event_id: int, account_id: int):
     db.refresh(db_participant)
     return db_participant
 
+def add_invite(
+        db: Session, 
+        account_id_received: int,
+        account_id_sent: int,
+        event_id: int, 
+        is_perm: bool
+    ):
+
+    code = secrets.token_urlsafe(5)
+    i = 0
+    while i < 10:
+        try:
+            get_invite_from_code(db=db, code=code)
+            break
+        except:
+            code = secrets.token_urlsafe(5)
+            i += 1
+            continue
+
+    db_invite = models.Invite(
+        account_id_received=account_id_received,
+        account_id_sent=account_id_sent,
+        event_id=event_id,
+        is_perm=is_perm
+    )
+    db.add(db_invite)
+    db.commit()
+    db.refresh(db_invite)
+    return db_invite
+
 #################
 # Read functions
 #################
@@ -74,7 +105,18 @@ def get_accounts(db: Session, skip: int = 0, limit: int = 10):
 def get_event(db: Session, event_id: int):
     return db.query(models.Event).filter(models.Event.id == event_id).first()
 
+def get_participant(db: Session, account_id: int):
+    return db.query(models.Participant).filter(models.Participant.account_id == account_id).first()
 
+def get_invite_from_code(db: Session, code: str):
+    return db.query(models.Participant).filter(models.Participant.code == code).first()
+
+def test_invite_exists(db: Session, account_id_received: int, event_id: int):
+    return db.query(models.Participant).filter(
+        models.Participant.account_id_received == account_id_received and models.Participant.event_id == event_id).first()
+
+def get_invites_from_account_id(db: Session, account_id: int):
+    return db.query(models.Invite).filter(models.Invite.account_id_received == account_id).all()
 
 ################
 # Test functions
