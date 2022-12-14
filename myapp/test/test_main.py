@@ -1,6 +1,6 @@
 import sys, os
 sys.path.append('../myapp')
-from src import main
+from src.api import main
 from fastapi.testclient import TestClient
 import pytest
 
