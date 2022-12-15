@@ -1,5 +1,4 @@
 import sys
-sys.path.append('..')
 
 from datetime import datetime, timedelta
 from typing import Union
@@ -11,8 +10,16 @@ from passlib.context import CryptContext
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from src import crud, models, schemas
-from src.database import SessionLocal, engine, get_db
+# Import DB Functions
+from src.db import accounts_db
+
+# Import Models
+from src.db.models import account_model, event_model
+
+# Import Schemas
+from src.db.schemas import account_schema
+
+from src.db.database_connection import SessionLocal, engine, get_db
 
 # to get a string like this run:
 # openssl rand -hex 32
@@ -38,7 +45,7 @@ def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
 def get_user(db, username: str):
-    account = crud.get_account_by_username(db, username)
+    account = accounts_db.get_account_by_username(db, username)
     return account
 
 def authenticate_user(db, username: str, password: str):
@@ -68,7 +75,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         raise credentials_exception
     return user
 
-async def get_current_active_user(current_user: schemas.Account = Depends(get_current_user)):
+async def get_current_active_user(current_user: account_schema.Account = Depends(get_current_user)):
     if not current_user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
@@ -98,14 +105,14 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
-@APIAccountsApp.get("/currentuser", response_model=schemas.Account)
-async def read_users_me(current_user: schemas.Account = Depends(get_current_active_user)):
+@APIAccountsApp.get("/currentuser", response_model=account_schema.Account)
+async def read_users_me(current_user: account_schema.Account = Depends(get_current_active_user)):
     return current_user
 
 # Create Account post view
 @APIAccountsApp.post('/signup')
-async def create_account(account: schemas.AccountCreate, db: Session = Depends(get_db)):
-    db_account = crud.get_account_by_email(db, email=account.email)
+def create_account(account: account_schema.AccountCreate, db: Session = Depends(get_db)):
+    db_account = accounts_db.get_account_by_email(db, email=account.email)
     if db_account:
         raise HTTPException(status_code=400, detail='Email account already registered.')
-    return crud.create_account(db=db, account=account)
+    return accounts_db.create_account(db=db, account=account)

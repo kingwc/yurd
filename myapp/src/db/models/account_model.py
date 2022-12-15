@@ -1,7 +1,9 @@
 from sqlalchemy.orm import relationship
 from sqlalchemy import Boolean, ForeignKey, Column, Integer, String
 import datetime
-from .database import Base
+from src.db.database_connection import Base
+import time
+from src.db.database_connection import Base
 
 # Models
 
@@ -20,7 +22,6 @@ class Account(Base):
 
     #relation
     events = relationship('Event', back_populates='owner')
-
 
 
 class Event(Base):
