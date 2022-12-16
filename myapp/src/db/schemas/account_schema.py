@@ -1,38 +1,5 @@
 from pydantic import BaseModel
-
-class Participant(BaseModel):
-    account_id: int
-
-    class Config:
-        orm_mode = True
-
-class UpdateParticipant(Participant):
-    permissions: int
-
-# Event schemas
-
-class EventBase(BaseModel):
-    title: str
-    description: str | None = None
-    is_public: bool
-
-class EventCreate(EventBase):
-    # to inherit EventBase
-    pass
-
-class Event(EventBase):
-    id: int
-    owner_id: int
-    participants: list[Participant] = []
-
-    class Config:
-        orm_mode = True
-
-class MyEvents(BaseModel):
-    title: str
-    description: str
-    is_public: bool
-    id: int
+from src.db.schemas.event_schema import Event
 
 # Acount schemas
 
@@ -53,12 +20,3 @@ class Account(AccountBase):
     class Config:
         orm_mode = True
 
-# Invite Schemas
-
-class InviteCreate(BaseModel):
-    account_id_received: int
-    event_id: int 
-    is_perm: bool
-
-class InviteView(BaseModel):
-    account_id: int
