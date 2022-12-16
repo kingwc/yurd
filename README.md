@@ -1,7 +1,7 @@
 # Yurd
 ## Run server:
 ```uvicorn main:app --reload```
-```py -m uvicorn src.main:app --reload (windows, from root)```
+```py -m uvicorn api.main:app --reload (windows, from root)```
 ## Set up python 3.11.1 and venv
 cd to root folder
 ```python -m venv venv```
