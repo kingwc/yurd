@@ -4,6 +4,7 @@ from sqlalchemy import inspect
 from src.db.models import account_model, event_model
 from src.db.database_connection import engine
 from src.api.accounts_controller import APIAccountsApp
+from src.api.events_controller import APIEventsApp
 
 account_model.Base.metadata.create_all(bind=engine)
 event_model.Base.metadata.create_all(bind=engine)
@@ -20,3 +21,4 @@ for schema in schemas:
 app = FastAPI()
 
 app.mount("/accounts", APIAccountsApp)
+app.mount("/events", APIEventsApp)

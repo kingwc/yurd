@@ -112,6 +112,7 @@ async def read_users_me(current_user: account_schema.Account = Depends(get_curre
 # Create Account post view
 @APIAccountsApp.post('/signup')
 def create_account(account: account_schema.AccountCreate, db: Session = Depends(get_db)):
+    print(account)
     db_account = accounts_db.get_account_by_email(db, email=account.email)
     if db_account:
         raise HTTPException(status_code=400, detail='Email account already registered.')

@@ -14,12 +14,11 @@ APIEventsApp = FastAPI()
 
 # Create event (tied to account object under 'events')
 @APIEventsApp.post('/create')
-async def create_event(
-        event: EventCreate, 
+async def create_event_api(
+        event: EventCreate,
         db: Session = Depends(get_db),
         account: account_schema.Account = Depends(get_current_active_user),
-    ):
-    print('test')
+      ):
     return create_event(db=db, event=event, account_id=account.id)
 
 # Displays events under account object
@@ -30,12 +29,12 @@ async def my_events(account: account_schema.Account = Depends(get_current_active
     return events
 
 # Queries event object of given event id
-@APIEventsApp.get('/{event_id}')
+@APIEventsApp.get('/get/{event_id}')
 async def event_query(event_id: int, db: Session = Depends(get_db)):
     return get_event(db=db, event_id=event_id)
 
 # Join event based off event id and passing through account token
-@APIEventsApp.post('/{event_id}/join')
+@APIEventsApp.post('/join/{event_id}')
 async def join_event(
         event_id: int, 
         db: Session = Depends(get_db),

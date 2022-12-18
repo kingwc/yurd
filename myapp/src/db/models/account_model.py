@@ -7,6 +7,7 @@ from src.db.database_connection import Base
 
 # Models
 
+
 class Account(Base):
     # Name of table
     __tablename__ = 'accounts'

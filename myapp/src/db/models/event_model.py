@@ -3,6 +3,7 @@ from sqlalchemy import Boolean, ForeignKey, Column, Integer, String
 import datetime
 from src.db.database_connection import Base
 
+
 class Event(Base):
     __tablename__ = 'events'
 
